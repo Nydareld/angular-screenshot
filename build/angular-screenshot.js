@@ -3842,8 +3842,13 @@ var screenshot = function screenshot() {
       };
 
       var cancel = function cancel() {
-         _utils.domprocess.remove(self.toolboxElement);
-         _utils.domprocess.clearCanvasRect(self.interactiveCanvas);
+
+         if (self.interceptCancel) {
+            self.interceptCancel();
+         } else {
+            _utils.domprocess.remove(self.toolboxElement);
+            _utils.domprocess.clearCanvasRect(self.interactiveCanvas);
+         }
       };
 
       var download = function download() {
@@ -4062,6 +4067,18 @@ var screenshot = function screenshot() {
       });
 
       $scope.$watch(function () {
+         return self.interceptCancel;
+      }, function (newVal) {
+         self.interceptCancel = newVal;
+      });
+
+      $scope.$watch(function () {
+         return self.interceptDownload;
+      }, function (newVal) {
+         self.interceptDownload = newVal;
+      });
+
+      $scope.$watch(function () {
          return self.toolboxOptions;
       }, function (newVal) {
          if (!angular.isObject(newVal)) return;
@@ -4078,7 +4095,8 @@ var screenshot = function screenshot() {
          isOpen: '=',
          toolboxOptions: '=?',
          api: '=?',
-         interceptDownload: '='
+         interceptDownload: '=',
+         interceptCancel: '='
       },
       controller: ['$scope', '$element', '$compile', '$timeout', '$window', screenshotController],
       controllerAs: 'screenshotCtrl',
