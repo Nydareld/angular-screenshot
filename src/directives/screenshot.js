@@ -25,8 +25,14 @@ const screenshot = () => {
       };
 
       const cancel = () => {
-         domprocess.remove(self.toolboxElement);
-         domprocess.clearCanvasRect(self.interactiveCanvas);
+
+         if (self.interceptCancel) {
+            self.interceptCancel();
+         } else {
+            domprocess.remove(self.toolboxElement);
+            domprocess.clearCanvasRect(self.interactiveCanvas);
+         }
+
       };
 
       const download = () => {
@@ -244,6 +250,14 @@ const screenshot = () => {
          }
       });
 
+      $scope.$watch(() => self.interceptCancel, (newVal) => {
+         self.interceptCancel = newVal;
+      });
+
+      $scope.$watch(() => self.interceptDownload, (newVal) => {
+         self.interceptDownload = newVal;
+      });
+
       $scope.$watch(() => self.toolboxOptions, (newVal) => {
          if (!angular.isObject(newVal)) return;
          self.cancelText = newVal.cancelText ? newVal.cancelText : self.cancelText;
@@ -259,7 +273,8 @@ const screenshot = () => {
          isOpen: '=',
          toolboxOptions: '=?',
          api: '=?',
-         interceptDownload: '='
+         interceptDownload: '=',
+         interceptCancel : '='
       },
       controller: ['$scope', '$element', '$compile', '$timeout', '$window', screenshotController],
       controllerAs: 'screenshotCtrl',
